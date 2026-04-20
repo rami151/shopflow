@@ -63,8 +63,8 @@ export class SellerDashboardPageComponent implements OnInit {
       next: ({ dashboard, products }) => {
         this.stats.set({
           products: products.totalElements || 0,
-          orders: (dashboard.commandesEnAttente || 0) + (dashboard.commandesLivrees || 0),
-          revenue: dashboard.revenuTotal || 0
+          orders: (dashboard.commandesEnAttente || dashboard.totalCommandes || 0) + (dashboard.commandesLivrees || 0),
+          revenue: dashboard.revenuTotal || dashboard.chiffreAffairesGlobal || 0
         });
         this.loading.set(false);
       },

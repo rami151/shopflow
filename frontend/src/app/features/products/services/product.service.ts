@@ -17,7 +17,6 @@ export interface Product {
   categories?: CategoryDto[];
   variants?: ProductVariant[];
   averageRating?: number;
-  rating?: number;
   reviewCount?: number;
 }
 

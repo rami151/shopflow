@@ -29,7 +29,7 @@ export interface Order {
   numeroCommande: string;
   statut: OrderStatus;
   items: OrderItem[];
-  subtotal: number;
+  sousTotal: number;
   fraisLivraison: number;
   couponDiscount: number;
   couponCode: string;
