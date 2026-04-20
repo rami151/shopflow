@@ -38,8 +38,8 @@ export class ErrorInterceptor implements HttpInterceptor {
         return this.authService.refreshToken().pipe(
           tap(response => {
             this.isRefreshing = false;
-            this.tokenService.setTokens(response.access_token, response.refresh_token);
-            this.refreshTokenSubject.next(response.access_token);
+            this.tokenService.setTokens(response.accessToken, response.refreshToken);
+            this.refreshTokenSubject.next(response.accessToken);
           }),
           switchMap(() => {
             const newToken = this.tokenService.getAccessToken();

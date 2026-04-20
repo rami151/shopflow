@@ -106,22 +106,24 @@ public class ProductController {
 
     @GetMapping("/top-selling")
     @Operation(summary = "Récupérer les produits les plus vendus", description = "Endpoint public - produits triés par nombre de ventes")
-    public ResponseEntity<Page<ProductSummaryDto>> getTopSellingProducts(
+    public ResponseEntity<List<ProductSummaryDto>> getTopSellingProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = productService.getTopSellingProducts(pageable);
-        Page<ProductSummaryDto> dtoPage = productPage.map(p -> new ProductSummaryDto(
-                p.getId(),
-                p.getNom(),
-                p.getPrix(),
-                p.getImageUrl(),
-                p.getStock(),
-                p.getSellerProfile().getUser().getNom() + " " + p.getSellerProfile().getUser().getPrenom(),
-                calculateAverageRating(p)
-        ));
-        return ResponseEntity.ok(dtoPage);
+        List<ProductSummaryDto> dtos = productPage.getContent().stream()
+                .map(p -> new ProductSummaryDto(
+                        p.getId(),
+                        p.getNom(),
+                        p.getPrix(),
+                        p.getImageUrl(),
+                        p.getStock(),
+                        p.getSellerProfile().getUser().getNom() + " " + p.getSellerProfile().getUser().getPrenom(),
+                        calculateAverageRating(p)
+                ))
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping

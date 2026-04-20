@@ -111,8 +111,14 @@ export class LoginComponent {
       return;
     }
 
+    const formValue = this.loginForm.value;
+    const credentials = {
+      email: formValue.email,
+      motDePasse: formValue.password
+    };
+
     this.loading.set(true);
-    this.authService.login(this.loginForm.value).subscribe({
+    this.authService.login(credentials).subscribe({
       next: () => {
         this.toastService.success('Welcome back!');
         const user = this.authService.getCurrentUser();

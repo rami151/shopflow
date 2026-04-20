@@ -1,5 +1,6 @@
 package com.shopflow.shared.security;
 
+import com.shopflow.shared.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -35,11 +36,18 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, accessExpiration, "access");
+        Map<String, Object> extraClaims = new HashMap<>();
+        if (userDetails instanceof User user) {
+            extraClaims.put("userId", user.getId());
+            extraClaims.put("role", user.getRole().name());
+            extraClaims.put("nom", user.getNom());
+            extraClaims.put("prenom", user.getPrenom());
+        }
+        return generateToken(userDetails, accessExpiration, "access", extraClaims);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(userDetails, refreshExpiration, "refresh");
+        return generateToken(userDetails, refreshExpiration, "refresh", new HashMap<>());
     }
 
     public String extractUsername(String token) {
@@ -55,8 +63,8 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
-    private String generateToken(UserDetails userDetails, long expiration, String type) {
-        Map<String, Object> claims = new HashMap<>();
+    private String generateToken(UserDetails userDetails, long expiration, String type, Map<String, Object> extraClaims) {
+        Map<String, Object> claims = new HashMap<>(extraClaims);
         claims.put("type", type);
 
         return Jwts.builder()
