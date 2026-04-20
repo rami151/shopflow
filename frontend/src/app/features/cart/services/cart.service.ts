@@ -7,22 +7,22 @@ export interface CartItem {
   id: number;
   productId: number;
   productName: string;
-  productImage: string;
+  productImageUrl: string;
   variantId?: number;
-  variantName?: string;
+  variantNom?: string;
+  variantValeur?: string;
   quantite: number;
-  prix: number;
+  prixUnitaire: number;
+  sousTotal: number;
 }
 
 export interface Cart {
   id: number;
-  userId: number;
   items: CartItem[];
   couponCode?: string;
-  discount: number;
   subtotal: number;
-  shipping: number;
-  total: number;
+  fraisLivraison: number;
+  totalTTC: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -48,14 +48,14 @@ export class CartService {
     return this.http.get<Cart>(`${this.apiUrl}/cart`);
   }
 
-  addItem(productId: number, quantity: number, variantId?: number): Observable<Cart> {
-    return this.http.post<Cart>(`${this.apiUrl}/cart/items`, { productId, quantity, variantId }).pipe(
+  addItem(productId: number, quantite: number, variantId?: number): Observable<Cart> {
+    return this.http.post<Cart>(`${this.apiUrl}/cart/items`, { productId, quantite, variantId }).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
   }
 
-  updateItemQuantity(itemId: number, quantity: number): Observable<Cart> {
-    return this.http.put<Cart>(`${this.apiUrl}/cart/items/${itemId}`, { quantity }).pipe(
+  updateItemQuantity(itemId: number, quantite: number): Observable<Cart> {
+    return this.http.put<Cart>(`${this.apiUrl}/cart/items/${itemId}`, { quantite }).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
   }

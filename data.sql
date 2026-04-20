@@ -35,14 +35,14 @@ ALTER SEQUENCE IF EXISTS reviews_id_seq RESTART WITH 1;
 -- 1. USERS
 -- ============================================================================
 INSERT INTO users (id, nom, prenom, email, mot_de_passe, role, actif, date_creation) VALUES
-(1, 'Admin', 'System', 'admin@shopflow.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'ADMIN', true, CURRENT_TIMESTAMP),
-(2, 'Benali', 'Mohamed', 'mohamed.benali@seller.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'SELLER', true, CURRENT_TIMESTAMP),
-(3, 'Trabelsi', 'Fatma', 'fatma.trabelsi@seller.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'SELLER', true, CURRENT_TIMESTAMP),
-(4, 'Bouazizi', 'Ahmed', 'ahmed.bouazizi@seller.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'SELLER', true, CURRENT_TIMESTAMP),
-(5, 'Hammami', 'Salma', 'salma.hammami@customer.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'CUSTOMER', true, CURRENT_TIMESTAMP),
-(6, 'Jlassi', 'Karim', 'karim.jlassi@customer.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'CUSTOMER', true, CURRENT_TIMESTAMP),
-(7, 'Sassi', 'Leila', 'leila.sassi@customer.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'CUSTOMER', true, CURRENT_TIMESTAMP),
-(8, 'Khelifi', 'Youssef', 'youssef.khelifi@customer.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'CUSTOMER', true, CURRENT_TIMESTAMP);
+(1, 'Admin', 'System', 'admin@shopflow.com', '$2a$10$G8S5M34L8k4PPTPvrNEQoOcGxsNfegSbsFKXVhv.MrscYBBTc.1HS', 'ADMIN', true, CURRENT_TIMESTAMP),
+(2, 'Benali', 'Mohamed', 'mohamed.benali@seller.com', '$2a$10$G8S5M34L8k4PPTPvrNEQoOcGxsNfegSbsFKXVhv.MrscYBBTc.1HS', 'SELLER', true, CURRENT_TIMESTAMP),
+(3, 'Trabelsi', 'Fatma', 'fatma.trabelsi@seller.com', '$2a$10$G8S5M34L8k4PPTPvrNEQoOcGxsNfegSbsFKXVhv.MrscYBBTc.1HS', 'SELLER', true, CURRENT_TIMESTAMP),
+(4, 'Bouazizi', 'Ahmed', 'ahmed.bouazizi@seller.com', '$2a$10$G8S5M34L8k4PPTPvrNEQoOcGxsNfegSbsFKXVhv.MrscYBBTc.1HS', 'SELLER', true, CURRENT_TIMESTAMP),
+(5, 'Hammami', 'Salma', 'salma.hammami@customer.com', '$2a$10$G8S5M34L8k4PPTPvrNEQoOcGxsNfegSbsFKXVhv.MrscYBBTc.1HS', 'CUSTOMER', true, CURRENT_TIMESTAMP),
+(6, 'Jlassi', 'Karim', 'karim.jlassi@customer.com', '$2a$10$G8S5M34L8k4PPTPvrNEQoOcGxsNfegSbsFKXVhv.MrscYBBTc.1HS', 'CUSTOMER', true, CURRENT_TIMESTAMP),
+(7, 'Sassi', 'Leila', 'leila.sassi@customer.com', '$2a$10$G8S5M34L8k4PPTPvrNEQoOcGxsNfegSbsFKXVhv.MrscYBBTc.1HS', 'CUSTOMER', true, CURRENT_TIMESTAMP),
+(8, 'Khelifi', 'Youssef', 'youssef.khelifi@customer.com', '$2a$10$G8S5M34L8k4PPTPvrNEQoOcGxsNfegSbsFKXVhv.MrscYBBTc.1HS', 'CUSTOMER', true, CURRENT_TIMESTAMP);
 
 -- Keep sequence aligned with explicit IDs above
 SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 0) FROM users));

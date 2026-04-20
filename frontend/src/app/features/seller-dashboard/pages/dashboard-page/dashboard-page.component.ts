@@ -1,7 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -55,9 +56,16 @@ export class SellerDashboardPageComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<any>(`${environment.apiUrl}${environment.apiPrefix}/dashboard/seller`).subscribe({
-      next: (data) => {
-        this.stats.set(data);
+    forkJoin({
+      dashboard: this.http.get<any>(`${environment.apiUrl}${environment.apiPrefix}/dashboard`),
+      products: this.http.get<any>(`${environment.apiUrl}${environment.apiPrefix}/products`, { params: new HttpParams().set('size', '0') })
+    }).subscribe({
+      next: ({ dashboard, products }) => {
+        this.stats.set({
+          products: products.totalElements || 0,
+          orders: (dashboard.commandesEnAttente || 0) + (dashboard.commandesLivrees || 0),
+          revenue: dashboard.revenuTotal || 0
+        });
         this.loading.set(false);
       },
       error: () => this.loading.set(false)

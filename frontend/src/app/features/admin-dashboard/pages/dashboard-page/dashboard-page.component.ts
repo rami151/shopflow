@@ -57,8 +57,16 @@ export class AdminDashboardPageComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<any>(`${environment.apiUrl}${environment.apiPrefix}/dashboard/admin`).subscribe({
-      next: (data) => { this.stats.set(data); this.loading.set(false); },
+    this.http.get<any>(`${environment.apiUrl}${environment.apiPrefix}/dashboard`).subscribe({
+      next: (data) => {
+        this.stats.set({
+          users: data.totalClients || 0,
+          sellers: data.totalVendeurs || 0,
+          orders: data.totalCommandes || 0,
+          revenue: data.chiffreAffairesGlobal || 0
+        });
+        this.loading.set(false);
+      },
       error: () => this.loading.set(false)
     });
   }

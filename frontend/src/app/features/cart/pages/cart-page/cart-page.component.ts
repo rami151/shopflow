@@ -44,8 +44,8 @@ import { ToastService } from '../../../../core/services/toast.service';
               @for (item of cart()!.items; track item.id) {
                 <div class="bg-white rounded-lg shadow p-4 flex gap-4">
                   <div class="w-24 h-24 bg-dark-100 rounded-lg overflow-hidden flex-shrink-0">
-                    @if (item.productImage) {
-                      <img [src]="item.productImage" [alt]="item.productName" (error)="onImageError($event)" class="w-full h-full object-cover" />
+                    @if (item.productImageUrl) {
+                      <img [src]="item.productImageUrl" [alt]="item.productName" (error)="onImageError($event)" class="w-full h-full object-cover" />
                     } @else {
                       <div class="w-full h-full flex items-center justify-center">
                         <svg class="w-8 h-8 text-dark-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,10 +56,10 @@ import { ToastService } from '../../../../core/services/toast.service';
                   </div>
                   <div class="flex-1">
                     <h3 class="font-semibold text-dark-900">{{ item.productName }}</h3>
-                    @if (item.variantName) {
-                      <p class="text-sm text-dark-500">{{ item.variantName }}</p>
+                    @if (item.variantNom) {
+                      <p class="text-sm text-dark-500">{{ item.variantNom }} {{ item.variantValeur }}</p>
                     }
-                    <p class="text-lg font-bold text-primary-600 mt-1">{{ item.prix | currency:'TND' }}</p>
+                    <p class="text-lg font-bold text-primary-600 mt-1">{{ item.prixUnitaire | currency:'TND' }}</p>
                   </div>
                   <div class="flex flex-col items-end justify-between">
                     <button (click)="removeItem(item.id)" class="text-dark-400 hover:text-red-500">
@@ -125,17 +125,11 @@ import { ToastService } from '../../../../core/services/toast.service';
                   </div>
                   <div class="flex justify-between text-dark-600">
                     <span>Shipping</span>
-                    <span>{{ cart()!.shipping | currency:'TND' }}</span>
+                    <span>{{ cart()!.fraisLivraison | currency:'TND' }}</span>
                   </div>
-                  @if (cart()!.discount > 0) {
-                    <div class="flex justify-between text-green-600">
-                      <span>Discount</span>
-                      <span>-{{ cart()!.discount | currency:'TND' }}</span>
-                    </div>
-                  }
                   <div class="flex justify-between text-lg font-bold text-dark-900 pt-2 border-t border-dark-100">
                     <span>Total</span>
-                    <span>{{ cart()!.total | currency:'TND' }}</span>
+                    <span>{{ cart()!.totalTTC | currency:'TND' }}</span>
                   </div>
                 </div>
 

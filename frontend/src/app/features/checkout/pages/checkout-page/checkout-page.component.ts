@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService, Cart } from '../../../cart/services/cart.service';
-import { OrderService } from '../../services/order.service';
+import { OrderService, Address } from '../../services/order.service';
 import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
@@ -42,8 +42,8 @@ import { ToastService } from '../../../../core/services/toast.service';
                           class="mt-1 text-primary-600"
                         />
                         <div>
-                          <p class="font-medium text-dark-900">{{ address.nom }}</p>
-                          <p class="text-sm text-dark-500">{{ address.rue }}, {{ address.ville }} {{ address.codePostal }}</p>
+                          <p class="font-medium text-dark-900">{{ address.rue }}</p>
+                          <p class="text-sm text-dark-500">{{ address.ville }} {{ address.codePostal }}, {{ address.pays }}</p>
                         </div>
                       </label>
                     }
@@ -60,13 +60,13 @@ import { ToastService } from '../../../../core/services/toast.service';
                   @for (item of cart()!.items; track item.id) {
                     <div class="flex gap-4">
                       <div class="w-16 h-16 bg-dark-100 rounded-lg overflow-hidden flex-shrink-0">
-                        <img [src]="item.productImage" [alt]="item.productName" (error)="onImageError($event)" class="w-full h-full object-cover" />
+                        <img [src]="item.productImageUrl" [alt]="item.productName" (error)="onImageError($event)" class="w-full h-full object-cover" />
                       </div>
                       <div class="flex-1">
                         <h3 class="font-medium text-dark-900">{{ item.productName }}</h3>
                         <p class="text-sm text-dark-500">Qty: {{ item.quantite }}</p>
                       </div>
-                      <p class="font-medium text-dark-900">{{ item.prix * item.quantite | currency:'TND' }}</p>
+                      <p class="font-medium text-dark-900">{{ item.sousTotal | currency:'TND' }}</p>
                     </div>
                   }
                 </div>
@@ -84,17 +84,17 @@ import { ToastService } from '../../../../core/services/toast.service';
                   </div>
                   <div class="flex justify-between text-dark-600">
                     <span>Shipping</span>
-                    <span>{{ cart()!.shipping | currency:'TND' }}</span>
+                    <span>{{ cart()!.fraisLivraison | currency:'TND' }}</span>
                   </div>
-                  @if (cart()!.discount > 0) {
+                  @if (cart()!.couponCode) {
                     <div class="flex justify-between text-green-600">
-                      <span>Discount</span>
-                      <span>-{{ cart()!.discount | currency:'TND' }}</span>
+                      <span>Coupon ({{ cart()!.couponCode }})</span>
+                      <span>Applied</span>
                     </div>
                   }
                   <div class="flex justify-between text-lg font-bold text-dark-900 pt-2 border-t border-dark-100">
                     <span>Total</span>
-                    <span>{{ cart()!.total | currency:'TND' }}</span>
+                    <span>{{ cart()!.totalTTC | currency:'TND' }}</span>
                   </div>
                 </div>
 
@@ -130,7 +130,7 @@ export class CheckoutPageComponent implements OnInit {
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-family="Arial,sans-serif" font-size="24">No Image</text></svg>';
 
   cart = signal<Cart | null>(null);
-  addresses = signal<any[]>([]);
+  addresses = signal<Address[]>([]);
   loading = signal(true);
   placing = signal(false);
   selectedAddress = signal<number | null>(null);
@@ -159,7 +159,8 @@ export class CheckoutPageComponent implements OnInit {
       next: (addresses) => {
         this.addresses.set(addresses);
         if (addresses.length > 0) {
-          this.selectedAddress.set(addresses[0].id);
+          const defaultAddr = addresses.find(a => a.principale);
+          this.selectedAddress.set(defaultAddr ? defaultAddr.id : addresses[0].id);
         }
       }
     });

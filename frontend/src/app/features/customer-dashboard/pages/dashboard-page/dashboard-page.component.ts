@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
-import { OrderService, Order, OrderStatus } from '../../../checkout/services/order.service';
+import { OrderService, Order } from '../../../checkout/services/order.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { User } from '../../../../core/models/user.model';
 
@@ -52,22 +52,22 @@ import { User } from '../../../../core/models/user.model';
               @for (order of orders().slice(0, 5); track order.id) {
                 <div class="p-6 flex items-center justify-between">
                   <div>
-                    <p class="font-medium text-dark-900">{{ order.orderNumber }}</p>
-                    <p class="text-sm text-dark-500">{{ order.items.length }} items - {{ order.total | currency:'TND' }}</p>
+                    <p class="font-medium text-dark-900">{{ order.numeroCommande }}</p>
+                    <p class="text-sm text-dark-500">{{ order.items.length }} items - {{ order.totalTTC | currency:'TND' }}</p>
                   </div>
                   <div class="text-right">
                     <span
                       class="px-3 py-1 rounded-full text-xs font-medium"
                       [class]="{
-                        'bg-yellow-100 text-yellow-800': order.status === 'PENDING',
-                        'bg-blue-100 text-blue-800': order.status === 'PAID' || order.status === 'SHIPPED',
-                        'bg-green-100 text-green-800': order.status === 'DELIVERED',
-                        'bg-red-100 text-red-800': order.status === 'CANCELLED'
+                        'bg-yellow-100 text-yellow-800': order.statut === 'PENDING',
+                        'bg-blue-100 text-blue-800': order.statut === 'PAID' || order.statut === 'PROCESSING' || order.statut === 'SHIPPED',
+                        'bg-green-100 text-green-800': order.statut === 'DELIVERED',
+                        'bg-red-100 text-red-800': order.statut === 'CANCELLED'
                       }"
                     >
-                      {{ order.status }}
+                      {{ order.statut }}
                     </span>
-                    <p class="text-xs text-dark-500 mt-1">{{ order.createdAt | date:'shortDate' }}</p>
+                    <p class="text-xs text-dark-500 mt-1">{{ order.dateCommande | date:'shortDate' }}</p>
                   </div>
                 </div>
               }
@@ -105,10 +105,10 @@ export class DashboardPageComponent implements OnInit {
   }
 
   pendingCount(): number {
-    return this.orders().filter(o => o.status === 'PENDING' || o.status === 'PAID').length;
+    return this.orders().filter(o => o.statut === 'PENDING' || o.statut === 'PAID').length;
   }
 
   deliveredCount(): number {
-    return this.orders().filter(o => o.status === 'DELIVERED').length;
+    return this.orders().filter(o => o.statut === 'DELIVERED').length;
   }
 }
