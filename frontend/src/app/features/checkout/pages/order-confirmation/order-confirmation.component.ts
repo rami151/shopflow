@@ -27,14 +27,16 @@ import { OrderService, Order } from '../../services/order.service';
             <div class="bg-dark-50 rounded-lg p-4 mb-6 text-left">
               <div class="flex justify-between mb-2">
                 <span class="text-dark-500">Order Number</span>
-                <span class="font-medium text-dark-900">{{ order()!.orderNumber }}</span>
+                <span class="font-medium text-dark-900">{{ order()!.numeroCommande }}</span>
               </div>
-              @if (order()!.estimatedDelivery) {
-                <div class="flex justify-between">
-                  <span class="text-dark-500">Estimated Delivery</span>
-                  <span class="font-medium text-dark-900">{{ order()!.estimatedDelivery | date:'mediumDate' }}</span>
-                </div>
-              }
+              <div class="flex justify-between mb-2">
+                <span class="text-dark-500">Status</span>
+                <span class="font-medium text-dark-900">{{ order()!.statut }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-dark-500">Total</span>
+                <span class="font-medium text-dark-900">{{ order()!.totalTTC | currency:'TND' }}</span>
+              </div>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-4">

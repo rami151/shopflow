@@ -72,9 +72,18 @@ export class AuthService {
   }
 
   logout(): void {
-    this.tokenService.clearTokens();
-    this.currentUserSubject.next(null);
-    this.router.navigate(['/auth/login']);
+    this.http.post(`${this.apiUrl}/auth/logout`, {}).subscribe({
+      complete: () => {
+        this.tokenService.clearTokens();
+        this.currentUserSubject.next(null);
+        this.router.navigate(['/auth/login']);
+      },
+      error: () => {
+        this.tokenService.clearTokens();
+        this.currentUserSubject.next(null);
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 
   isAuthenticated(): boolean {

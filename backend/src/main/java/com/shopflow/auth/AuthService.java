@@ -4,7 +4,10 @@ import com.shopflow.auth.dto.AuthResponse;
 import com.shopflow.auth.dto.LoginRequest;
 import com.shopflow.auth.dto.RefreshRequest;
 import com.shopflow.auth.dto.RegisterRequest;
+import com.shopflow.product.SellerProfileRepository;
+import com.shopflow.shared.entity.SellerProfile;
 import com.shopflow.shared.entity.User;
+import com.shopflow.shared.enums.Role;
 import com.shopflow.shared.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
+    private final SellerProfileRepository sellerProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -36,6 +40,18 @@ public class AuthService {
                 .actif(true)
                 .build();
         userRepository.save(user);
+
+        if (request.role() == Role.SELLER) {
+            SellerProfile profile = SellerProfile.builder()
+                    .user(user)
+                    .nomBoutique("Boutique de " + request.prenom() + " " + request.nom())
+                    .description("Boutique du vendeur")
+                    .actif(true)
+                    .build();
+            sellerProfileRepository.save(profile);
+            user.setSellerProfile(profile);
+        }
+
         String accessToken = jwtUtil.generateAccessToken(user);
         String refreshToken = jwtUtil.generateRefreshToken(user);
         return new AuthResponse(accessToken, refreshToken, user.getEmail(), user.getRole().name());
