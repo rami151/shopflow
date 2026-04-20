@@ -126,6 +126,29 @@ public class ProductController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/mine")
+    @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
+    @Operation(summary = "Récupérer mes produits (SELLER/ADMIN)", description = "Retourne les produits actifs du vendeur connecté", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<Page<ProductSummaryDto>> getMyProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            Authentication authentication
+    ) {
+        String email = getAuthenticatedEmail(authentication);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Product> productPage = productService.getMyActiveProducts(email, pageable);
+        Page<ProductSummaryDto> dtoPage = productPage.map(p -> new ProductSummaryDto(
+                p.getId(),
+                p.getNom(),
+                p.getPrix(),
+                p.getImageUrl(),
+                p.getStock(),
+                p.getSellerProfile().getUser().getNom() + " " + p.getSellerProfile().getUser().getPrenom(),
+                calculateAverageRating(p)
+        ));
+        return ResponseEntity.ok(dtoPage);
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
     @Operation(summary = "Créer un nouveau produit", description = "Réservé SELLER et ADMIN", security = @SecurityRequirement(name = "bearerAuth"))

@@ -64,7 +64,7 @@ export class MyOrdersComponent implements OnInit {
 
   ngOnInit(): void {
     this.orderService.getMyOrders().subscribe({
-      next: (orders) => { this.orders.set(orders); this.loading.set(false); },
+      next: (page) => { this.orders.set(page.content ?? []); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
   }

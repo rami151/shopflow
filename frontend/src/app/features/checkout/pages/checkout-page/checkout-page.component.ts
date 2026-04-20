@@ -80,7 +80,7 @@ import { ToastService } from '../../../../core/services/toast.service';
                 <div class="space-y-2">
                   <div class="flex justify-between text-dark-600">
                     <span>Subtotal</span>
-                    <span>{{ cart()!.sousTotal | currency:'TND' }}</span>
+                    <span>{{ cart()!.subtotal | currency:'TND' }}</span>
                   </div>
                   <div class="flex justify-between text-dark-600">
                     <span>Shipping</span>

@@ -48,6 +48,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    public Page<Product> getMyActiveProducts(String authenticatedEmail, Pageable pageable) {
+        return productRepository.findByActifTrueAndSellerProfileUserEmail(authenticatedEmail, pageable);
+    }
+
+    @Transactional(readOnly = true)
     public Product getProductById(Long id) {
         return productRepository.findByIdAndActifTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produit non trouvé avec l'ID: " + id));

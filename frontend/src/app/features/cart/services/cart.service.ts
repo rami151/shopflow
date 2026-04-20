@@ -20,7 +20,7 @@ export interface Cart {
   id: number;
   items: CartItem[];
   couponCode?: string;
-  sousTotal: number;
+  subtotal: number;
   fraisLivraison: number;
   totalTTC: number;
 }
