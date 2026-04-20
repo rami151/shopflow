@@ -126,7 +126,7 @@ import { ToastService } from '../../../../core/services/toast.service';
                       <p class="text-sm text-dark-500">{{ product.prix | currency:'TND' }} - Stock: {{ product.stock }}</p>
                     </div>
                   </div>
-                  <span [class]="product.active ? 'text-green-600' : 'text-red-500'">{{ product.active ? 'Active' : 'Inactive' }}</span>
+                  <span [class]="product.actif ? 'text-green-600' : 'text-red-500'">{{ product.actif ? 'Active' : 'Inactive' }}</span>
                 </div>
               }
             </div>

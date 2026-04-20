@@ -3,22 +3,23 @@
 ## Build & Run
 
 ```bash
-# Backend (port 8080)
+# Backend (port 8080) - requires PostgreSQL on 5432
 cd backend
-./mvnw spring-boot:run     # dev mode
-./mvnw package             # build JAR
-./mvnw test                # run tests
+mvnw.cmd spring-boot:run   # dev mode (PowerShell)
+./mvnw spring-boot:run      # dev mode (Git Bash/WSL)
+mvnw.cmd test              # run tests
 
 # Frontend (port 4200)
 cd frontend
 npm start                  # dev mode
-npm run build             # production build
+npm run build              # production build
+npm test                   # run unit tests (Karma)
 ```
 
 ## Tech Stack
 
 - Java 21, Spring Boot 3.2.5, Maven
-- PostgreSQL (prod) / H2 (dev)
+- PostgreSQL (always, no dev profile for H2)
 - Angular 17+ (frontend at `localhost:4200`)
 - JWT authentication with jjwt 0.12.3
 - MapStruct for DTO mapping
@@ -27,7 +28,7 @@ npm run build             # production build
 ## Dev URLs
 
 - Swagger UI: `http://localhost:8080/swagger-ui`
-- H2 Console: `http://localhost:8080/h2-console` (dev only)
+- H2 Console: `http://localhost:8080/h2-console`
 
 ## Critical: Lombok + MapStruct
 

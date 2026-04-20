@@ -104,9 +104,9 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
                       </div>
                       <div class="p-4">
                         <h3 class="font-semibold text-dark-900 group-hover:text-primary-600 transition">{{ product.nom }}</h3>
-                        @if (product.rating) {
+                        @if (product.averageRating) {
                           <div class="mt-1">
-                            <app-rating-stars [rating]="product.rating" [reviewCount]="product.reviewCount" [showCount]="true" />
+                            <app-rating-stars [rating]="product.averageRating" [reviewCount]="product.reviewCount" [showCount]="true" />
                           </div>
                         }
                         <div class="flex items-center justify-between mt-2">
