@@ -168,11 +168,8 @@ export class MyProductsComponent implements OnInit {
 
   private loadProducts(): void {
     this.loading.set(true);
-    const currentUser = this.authService.getCurrentUser();
-    const sellerId = currentUser?.id;
-    const sellerQuery = sellerId ? `?sellerId=${sellerId}` : '';
     this.http
-      .get<{ content: any[] }>(`${environment.apiUrl}${environment.apiPrefix}/products${sellerQuery}`)
+      .get<{ content: any[] }>(`${environment.apiUrl}${environment.apiPrefix}/products/mine`)
       .subscribe({
         next: (response) => {
           this.products.set(response?.content ?? []);

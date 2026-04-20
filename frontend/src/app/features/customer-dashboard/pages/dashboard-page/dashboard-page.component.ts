@@ -96,8 +96,8 @@ export class DashboardPageComponent implements OnInit {
 
   private loadOrders(): void {
     this.orderService.getMyOrders().subscribe({
-      next: (orders) => {
-        this.orders.set(orders);
+      next: (page) => {
+        this.orders.set(page.content ?? []);
         this.loading.set(false);
       },
       error: () => this.loading.set(false)

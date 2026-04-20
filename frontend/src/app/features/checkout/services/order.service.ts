@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface Address {
@@ -29,7 +29,7 @@ export interface Order {
   numeroCommande: string;
   statut: OrderStatus;
   items: OrderItem[];
-  sousTotal: number;
+  subtotal: number;
   fraisLivraison: number;
   couponDiscount: number;
   couponCode: string;
@@ -69,13 +69,11 @@ export class OrderService {
     return this.http.post<Order>(`${this.apiUrl}/orders`, { addressId });
   }
 
-  getMyOrders(page: number = 0, size: number = 10): Observable<Order[]> {
+  getMyOrders(page: number = 0, size: number = 10): Observable<PageResponse<Order>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-    return this.http.get<PageResponse<Order>>(`${this.apiUrl}/orders`, { params }).pipe(
-      map(response => response.content)
-    );
+    return this.http.get<PageResponse<Order>>(`${this.apiUrl}/orders`, { params });
   }
 
   getOrderById(id: number): Observable<Order> {

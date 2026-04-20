@@ -60,10 +60,10 @@ export class AdminDashboardPageComponent implements OnInit {
     this.http.get<any>(`${environment.apiUrl}${environment.apiPrefix}/dashboard`).subscribe({
       next: (data) => {
         this.stats.set({
-          users: data.totalClients || data.totalClients || 0,
-          sellers: data.totalVendeurs || data.totalVendeurs || 0,
-          orders: data.totalCommandes || data.totalCommandes || 0,
-          revenue: data.chiffreAffairesGlobal || data.revenuTotal || 0
+          users: data.totalClients ?? 0,
+          sellers: data.totalVendeurs ?? 0,
+          orders: (data.totalCommandes ?? 0),
+          revenue: (data.chiffreAffairesGlobal ?? data.revenuTotal ?? 0)
         });
         this.loading.set(false);
       },

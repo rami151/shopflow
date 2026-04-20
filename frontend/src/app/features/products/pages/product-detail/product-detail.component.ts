@@ -6,6 +6,7 @@ import { ProductService, Product, ProductVariant } from '../../services/product.
 import { CartService } from '../../../cart/services/cart.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { ReviewService, Review } from '../../../reviews/services/review.service';
 import { RatingStarsComponent } from '../../../../shared/components/rating-stars/rating-stars.component';
 
 @Component({
@@ -147,6 +148,44 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
                 <p class="text-dark-600">{{ product()!.description }}</p>
               </div>
             }
+
+            <!-- Reviews -->
+            <div class="mt-12 border-t border-dark-100 pt-8">
+              <div class="flex items-center justify-between gap-4 mb-4">
+                <h2 class="text-xl font-semibold text-dark-900">Reviews</h2>
+                @if (reviewStats().nombreAvis > 0) {
+                  <div class="text-sm text-dark-600">
+                    Average: <span class="font-semibold text-dark-900">{{ reviewStats().noteMoyenne ?? 0 }}</span>
+                    ({{ reviewStats().nombreAvis }} reviews)
+                  </div>
+                }
+              </div>
+
+              @if (reviewsLoading()) {
+                <div class="text-dark-500">Loading reviews…</div>
+              } @else if (reviewsError()) {
+                <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
+                  {{ reviewsError() }}
+                </div>
+              } @else if (reviews().length === 0) {
+                <p class="text-dark-500">No reviews yet.</p>
+              } @else {
+                <div class="space-y-4">
+                  @for (review of reviews(); track review.id) {
+                    <div class="bg-dark-50 rounded-lg p-4">
+                      <div class="flex items-center justify-between">
+                        <div class="font-medium text-dark-900">{{ review.userNom }}</div>
+                        <div class="text-sm text-dark-500">{{ review.dateCreation | date:'short' }}</div>
+                      </div>
+                      <div class="mt-1 text-sm text-dark-700">Rating: <span class="font-semibold">{{ review.note }}/5</span></div>
+                      @if (review.commentaire) {
+                        <p class="mt-2 text-dark-700">{{ review.commentaire }}</p>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
           </div>
         } @else {
           <div class="bg-white rounded-lg shadow p-12 text-center">
@@ -171,12 +210,18 @@ export class ProductDetailComponent implements OnInit {
   addingToCart = signal(false);
   isAuthenticated = false;
 
+  reviews = signal<Review[]>([]);
+  reviewStats = signal<{ noteMoyenne: number | null; nombreAvis: number }>({ noteMoyenne: null, nombreAvis: 0 });
+  reviewsLoading = signal(false);
+  reviewsError = signal<string | null>(null);
+
   constructor(
     private route: ActivatedRoute,
     private productService: ProductService,
     private cartService: CartService,
     private authService: AuthService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private reviewService: ReviewService
   ) {}
 
   ngOnInit(): void {
@@ -196,9 +241,28 @@ export class ProductDetailComponent implements OnInit {
           this.selectedImage.set(product.images[0]);
         }
         this.loading.set(false);
+        this.loadReviews(product.id);
       },
       error: () => {
         this.loading.set(false);
+      }
+    });
+  }
+
+  private loadReviews(productId: number): void {
+    this.reviewsLoading.set(true);
+    this.reviewsError.set(null);
+    this.reviewService.getProductReviews(productId, 0, 10).subscribe({
+      next: (res) => {
+        this.reviews.set(res.avis ?? []);
+        this.reviewStats.set({ noteMoyenne: res.noteMoyenne ?? null, nombreAvis: res.nombreAvis ?? 0 });
+        this.reviewsLoading.set(false);
+      },
+      error: (err) => {
+        this.reviewsError.set(err?.error?.message || 'Failed to load reviews');
+        this.reviews.set([]);
+        this.reviewStats.set({ noteMoyenne: null, nombreAvis: 0 });
+        this.reviewsLoading.set(false);
       }
     });
   }
