@@ -16,21 +16,22 @@ export enum UserRole {
 
 export interface LoginRequest {
   email: string;
-  password: string;
+  motDePasse: string;
 }
 
 export interface RegisterRequest {
-  email: string;
-  password: string;
   nom: string;
   prenom: string;
+  email: string;
+  motDePasse: string;
   role?: UserRole;
 }
 
 export interface JwtResponse {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
+  accessToken: string;
+  refreshToken: string;
+  email: string;
+  role: string;
 }
 
 export interface ApiResponse<T> {

@@ -144,12 +144,17 @@ export class RegisterComponent {
       return;
     }
 
-    const { confirmPassword, ...data } = this.registerForm.value;
+    const { confirmPassword, password, ...rest } = this.registerForm.value;
 
-    if (data.password !== confirmPassword) {
+    if (password !== confirmPassword) {
       this.toastService.error('Passwords do not match');
       return;
     }
+
+    const data = {
+      ...rest,
+      motDePasse: password
+    };
 
     this.loading.set(true);
     this.authService.register(data).subscribe({

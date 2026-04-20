@@ -3,16 +3,23 @@
 ## Build & Run
 
 ```bash
+# Backend (port 8080)
 cd backend
-./mvnw spring-boot:run     # dev mode (port 8080)
+./mvnw spring-boot:run     # dev mode
 ./mvnw package             # build JAR
 ./mvnw test                # run tests
+
+# Frontend (port 4200)
+cd frontend
+npm start                  # dev mode
+npm run build             # production build
 ```
 
 ## Tech Stack
 
 - Java 21, Spring Boot 3.2.5, Maven
 - PostgreSQL (prod) / H2 (dev)
+- Angular 17+ (frontend at `localhost:4200`)
 - JWT authentication with jjwt 0.12.3
 - MapStruct for DTO mapping
 - SpringDoc OpenAPI (Swagger UI)
@@ -36,7 +43,7 @@ If MapStruct fails to see getters/setters, check the order in `maven-compiler-pl
 
 ## Packages
 
-- `` — login/registercom.shopflow.auth, JWT
+- `com.shopflow.auth` — login/register, JWT
 - `com.shopflow.product` — products, categories
 - `com.shopflow.cart` — shopping cart, coupons
 - `com.shopflow.order` — orders, addresses
@@ -46,5 +53,7 @@ If MapStruct fails to see getters/setters, check the order in `maven-compiler-pl
 
 ## Notes
 
-- This is a **backend-only** project (frontend folder is empty)
+- Fullstack: Angular 17+ frontend + Spring Boot backend
+- PostgreSQL must be running locally on port 5432 (or update `application.properties`)
 - DB credentials in `application.properties` are for local dev only
+- CORS configured in SecurityConfig.java to allow `http://localhost:4200`
