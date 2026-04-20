@@ -1,9 +1,11 @@
 package com.shopflow.shared.security;
 
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,6 +30,11 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable());
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getWriter().write("{\"message\":\"Invalid email or password\"}");
+        }));
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
@@ -39,6 +46,7 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui.html").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/api/dashboard/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/dashboard/seller/**").hasRole("SELLER")
                 .requestMatchers("/api/dashboard/customer/**").hasRole("CUSTOMER")

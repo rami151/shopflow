@@ -47,7 +47,7 @@ export interface Category {
 export interface ProductFilters {
   page?: number;
   size?: number;
-  category?: string;
+  categoryId?: number;
   minPrice?: number;
   maxPrice?: number;
   minRating?: number;
@@ -61,12 +61,20 @@ export class ProductService {
   constructor(private http: HttpClient) {}
 
   getProducts(filters: ProductFilters = {}): Observable<ProductsResponse> {
+    if (filters.search && filters.search.trim().length > 0) {
+      let searchParams = new HttpParams();
+      searchParams = searchParams.set('q', filters.search.trim());
+      if (filters.page !== undefined) searchParams = searchParams.set('page', filters.page.toString());
+      if (filters.size) searchParams = searchParams.set('size', filters.size.toString());
+      return this.http.get<ProductsResponse>(`${this.apiUrl}/products/search`, { params: searchParams });
+    }
+
     let params = new HttpParams();
     if (filters.page !== undefined) params = params.set('page', filters.page.toString());
     if (filters.size) params = params.set('size', filters.size.toString());
-    if (filters.category) params = params.set('category', filters.category);
-    if (filters.minPrice) params = params.set('minPrice', filters.minPrice.toString());
-    if (filters.maxPrice) params = params.set('maxPrice', filters.maxPrice.toString());
+    if (filters.categoryId !== undefined) params = params.set('categoryId', filters.categoryId.toString());
+    if (filters.minPrice !== undefined && filters.minPrice !== null) params = params.set('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice !== undefined && filters.maxPrice !== null) params = params.set('maxPrice', filters.maxPrice.toString());
     if (filters.minRating) params = params.set('minRating', filters.minRating.toString());
     if (filters.search) params = params.set('search', filters.search);
 

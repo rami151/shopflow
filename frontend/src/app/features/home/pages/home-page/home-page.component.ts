@@ -29,7 +29,7 @@ import { ProductService, Product, Category } from '../../../products/services/pr
           <h2 class="text-2xl font-bold text-dark-900 mb-8 text-center">Shop by Category</h2>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             @for (category of categories(); track category.id) {
-              <a [routerLink]="['/products']" [queryParams]="{category: category.nom}" class="group block text-center p-6 rounded-xl border border-dark-100 hover:border-primary-300 hover:shadow-lg transition duration-300">
+              <a [routerLink]="['/products']" [queryParams]="{categoryId: category.id}" class="group block text-center p-6 rounded-xl border border-dark-100 hover:border-primary-300 hover:shadow-lg transition duration-300">
                 <div class="w-16 h-16 mx-auto mb-4 bg-primary-50 rounded-full flex items-center justify-center group-hover:bg-primary-100 transition">
                   <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10m-8 4l-8-4m8 4l8-4m-8 4v10m-8-4l8 4" />
@@ -66,7 +66,7 @@ import { ProductService, Product, Category } from '../../../products/services/pr
                 <a [routerLink]="['/products', product.id]" class="group bg-white rounded-lg shadow-sm hover:shadow-lg transition duration-300 overflow-hidden">
                   <div class="relative aspect-square bg-dark-100 overflow-hidden">
                     @if (product.imageUrl) {
-                      <img [src]="product.imageUrl" [alt]="product.nom" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                      <img [src]="product.imageUrl" [alt]="product.nom" (error)="onImageError($event)" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                     } @else {
                       <div class="w-full h-full flex items-center justify-center">
                         <svg class="w-16 h-16 text-dark-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,6 +125,9 @@ import { ProductService, Product, Category } from '../../../products/services/pr
   styles: []
 })
 export class HomePageComponent implements OnInit {
+  private readonly fallbackImage =
+    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-family="Arial,sans-serif" font-size="24">No Image</text></svg>';
+
   featuredProducts = signal<Product[]>([]);
   categories = signal<Category[]>([]);
   loading = signal(true);
@@ -155,5 +158,12 @@ export class HomePageComponent implements OnInit {
         ]);
       }
     });
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement | null;
+    if (img && img.src !== this.fallbackImage) {
+      img.src = this.fallbackImage;
+    }
   }
 }

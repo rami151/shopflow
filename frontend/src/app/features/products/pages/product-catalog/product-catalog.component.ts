@@ -34,12 +34,12 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
               <h3 class="font-semibold text-dark-900 mb-4">Categories</h3>
               <div class="space-y-2">
                 <label class="flex items-center">
-                  <input type="radio" name="category" [(ngModel)]="filters.category" [value]="''" (ngModelChange)="loadProducts()" class="text-primary-600" />
+                  <input type="radio" name="category" [(ngModel)]="filters.categoryId" [value]="undefined" (ngModelChange)="onFiltersChanged()" class="text-primary-600" />
                   <span class="ml-2 text-dark-600">All</span>
                 </label>
                 @for (category of categories(); track category.id) {
                   <label class="flex items-center">
-                    <input type="radio" name="category" [(ngModel)]="filters.category" [value]="category.nom" (ngModelChange)="loadProducts()" class="text-primary-600" />
+                    <input type="radio" name="category" [(ngModel)]="filters.categoryId" [value]="category.id" (ngModelChange)="onFiltersChanged()" class="text-primary-600" />
                     <span class="ml-2 text-dark-600">{{ category.nom }}</span>
                   </label>
                 }
@@ -50,7 +50,7 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
                 <input
                   type="number"
                   [(ngModel)]="filters.minPrice"
-                  (ngModelChange)="loadProducts()"
+                  (ngModelChange)="onFiltersChanged()"
                   placeholder="Min"
                   class="input-field"
                 />
@@ -58,7 +58,7 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
                 <input
                   type="number"
                   [(ngModel)]="filters.maxPrice"
-                  (ngModelChange)="loadProducts()"
+                  (ngModelChange)="onFiltersChanged()"
                   placeholder="Max"
                   class="input-field"
                 />
@@ -93,7 +93,7 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
                     <a [routerLink]="['/products', product.id]" class="block">
                       <div class="relative aspect-square bg-dark-100 overflow-hidden">
                         @if (product.imageUrl) {
-                          <img [src]="product.imageUrl" [alt]="product.nom" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                          <img [src]="product.imageUrl" [alt]="product.nom" (error)="onImageError($event)" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                         } @else {
                           <div class="w-full h-full flex items-center justify-center">
                             <svg class="w-16 h-16 text-dark-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,6 +160,9 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
   styles: []
 })
 export class ProductCatalogComponent implements OnInit {
+  private readonly fallbackImage =
+    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-family="Arial,sans-serif" font-size="24">No Image</text></svg>';
+
   products = signal<Product[]>([]);
   categories = signal<Category[]>([]);
   loading = signal(true);
@@ -178,8 +181,9 @@ export class ProductCatalogComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      if (params['category']) {
-        this.filters.category = params['category'];
+      if (params['categoryId']) {
+        const categoryId = Number(params['categoryId']);
+        this.filters.categoryId = Number.isNaN(categoryId) ? undefined : categoryId;
       }
     });
 
@@ -189,7 +193,18 @@ export class ProductCatalogComponent implements OnInit {
 
   private loadCategories(): void {
     this.productService.getCategories().subscribe({
-      next: (categories) => this.categories.set(categories)
+      next: (categories) => {
+        this.categories.set(categories);
+        // Backward compatibility for old links using category name.
+        const categoryName = this.route.snapshot.queryParamMap.get('category');
+        if (categoryName && this.filters.categoryId === undefined) {
+          const matched = categories.find(c => c.nom === categoryName);
+          if (matched) {
+            this.filters.categoryId = matched.id;
+            this.loadProducts();
+          }
+        }
+      }
     });
   }
 
@@ -211,10 +226,22 @@ export class ProductCatalogComponent implements OnInit {
     this.loadProducts();
   }
 
+  onFiltersChanged(): void {
+    this.filters.page = 0;
+    this.loadProducts();
+  }
+
   goToPage(page: number): void {
     if (page >= 0 && page < this.totalPages()) {
       this.filters.page = page;
       this.loadProducts();
+    }
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement | null;
+    if (img && img.src !== this.fallbackImage) {
+      img.src = this.fallbackImage;
     }
   }
 }

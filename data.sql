@@ -44,6 +44,9 @@ INSERT INTO users (id, nom, prenom, email, mot_de_passe, role, actif, date_creat
 (7, 'Sassi', 'Leila', 'leila.sassi@customer.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'CUSTOMER', true, CURRENT_TIMESTAMP),
 (8, 'Khelifi', 'Youssef', 'youssef.khelifi@customer.com', '$2a$10$NJh0vFESxTld7iGqFBdzCuwshuApmq14BECPDFtRLhvqtyVD7MIfq', 'CUSTOMER', true, CURRENT_TIMESTAMP);
 
+-- Keep sequence aligned with explicit IDs above
+SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 0) FROM users));
+
 -- ============================================================================
 -- 2. SELLER PROFILES
 -- ============================================================================

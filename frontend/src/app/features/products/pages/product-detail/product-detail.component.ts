@@ -34,7 +34,7 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
               <div class="lg:w-1/2">
                 <div class="aspect-square bg-dark-100 rounded-lg overflow-hidden mb-4">
                   @if (selectedImage()) {
-                    <img [src]="selectedImage()" [alt]="product()!.nom" class="w-full h-full object-cover" />
+                    <img [src]="selectedImage()" [alt]="product()!.nom" (error)="onImageError($event)" class="w-full h-full object-cover" />
                   } @else {
                     <div class="w-full h-full flex items-center justify-center">
                       <svg class="w-24 h-24 text-dark-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
                         (click)="selectedImage.set(image)"
                         [class]="['w-20 h-20 rounded-md overflow-hidden border-2', selectedImage() === image ? 'border-primary-600' : 'border-transparent']"
                       >
-                        <img [src]="image" [alt]="product()!.nom" class="w-full h-full object-cover" />
+                        <img [src]="image" [alt]="product()!.nom" (error)="onImageError($event)" class="w-full h-full object-cover" />
                       </button>
                     }
                   </div>
@@ -107,9 +107,9 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
                 </div>
 
                 <div class="mt-4">
-                  @if (selectedVariant()?.stock || product()!.stock > 0) {
-                    <p class="text-sm" [class]="selectedVariant()!.stock > 10 ? 'text-green-600' : 'text-orange-600'">
-                      {{ selectedVariant()?.stock || product()!.stock }} available in stock
+                  @if ((selectedVariant()?.stock ?? product()!.stock) > 0) {
+                    <p class="text-sm" [class]="(selectedVariant()?.stock ?? product()!.stock) > 10 ? 'text-green-600' : 'text-orange-600'">
+                      {{ selectedVariant()?.stock ?? product()!.stock }} available in stock
                     </p>
                   } @else {
                     <p class="text-sm text-red-500">Out of stock</p>
@@ -160,6 +160,9 @@ import { RatingStarsComponent } from '../../../../shared/components/rating-stars
   styles: []
 })
 export class ProductDetailComponent implements OnInit {
+  private readonly fallbackImage =
+    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-family="Arial,sans-serif" font-size="24">No Image</text></svg>';
+
   product = signal<Product | null>(null);
   selectedImage = signal<string | null>(null);
   selectedVariant = signal<ProductVariant | null>(null);
@@ -228,5 +231,13 @@ export class ProductDetailComponent implements OnInit {
         this.addingToCart.set(false);
       }
     });
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement | null;
+    if (img && img.src !== this.fallbackImage) {
+      img.src = this.fallbackImage;
+    }
+    this.selectedImage.set(this.fallbackImage);
   }
 }

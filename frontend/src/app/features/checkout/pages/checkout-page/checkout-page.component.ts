@@ -60,7 +60,7 @@ import { ToastService } from '../../../../core/services/toast.service';
                   @for (item of cart()!.items; track item.id) {
                     <div class="flex gap-4">
                       <div class="w-16 h-16 bg-dark-100 rounded-lg overflow-hidden flex-shrink-0">
-                        <img [src]="item.productImage" [alt]="item.productName" class="w-full h-full object-cover" />
+                        <img [src]="item.productImage" [alt]="item.productName" (error)="onImageError($event)" class="w-full h-full object-cover" />
                       </div>
                       <div class="flex-1">
                         <h3 class="font-medium text-dark-900">{{ item.productName }}</h3>
@@ -126,6 +126,9 @@ import { ToastService } from '../../../../core/services/toast.service';
   styles: []
 })
 export class CheckoutPageComponent implements OnInit {
+  private readonly fallbackImage =
+    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-family="Arial,sans-serif" font-size="24">No Image</text></svg>';
+
   cart = signal<Cart | null>(null);
   addresses = signal<any[]>([]);
   loading = signal(true);
@@ -181,5 +184,12 @@ export class CheckoutPageComponent implements OnInit {
         this.placing.set(false);
       }
     });
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement | null;
+    if (img && img.src !== this.fallbackImage) {
+      img.src = this.fallbackImage;
+    }
   }
 }
